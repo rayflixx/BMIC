@@ -1,0 +1,86 @@
+
+#include <iostream>
+using namespace std;
+
+typedef struct node {
+    string Prn, Name, Post;
+    struct node* next;
+} node;
+
+class AIMSA {
+    node* pres;
+    node* sec;
+    node* temp;
+
+public:
+    AIMSA() {
+        pres = NULL;
+        sec = NULL;
+        temp = NULL;
+    }
+
+    int create_club() {
+        node* nn = new node();
+
+        cout << "Enter Name of the President: ";
+        cin >> nn->Name;
+        cout << "Enter PRN of the President: ";
+        cin >> nn->Prn;
+
+        nn->Post = "President";
+        nn->next = NULL;
+        pres = nn;
+
+        node* cn = new node();
+
+        cout << "Enter Name of the Secretary: ";
+        cin >> cn->Name;
+        cout << "Enter PRN of the Secretary: ";
+        cin >> cn->Prn;
+
+        cn->Post = "Secretary";
+        cn->next = NULL;
+
+        sec = cn;
+        pres->next = sec;
+
+        return 0;
+    }
+
+    void add_member() {
+        node* nn = new node();
+
+        cout << "Enter Name of the member: ";
+        cin >> nn->Name;
+        cout << "Enter PRN of the member: ";
+        cin >> nn->Prn;
+
+        nn->Post = "Member";
+        nn->next = pres->next;
+        pres->next = nn;
+
+        cout << "Member added successfully.\n";
+    }
+
+    void display_club() {
+        temp = pres;
+
+        while (temp != NULL) {
+            cout << "\nName: " << temp->Name << endl;
+            cout << "PRN: " << temp->Prn << endl;
+            cout << "Post: " << temp->Post << endl;
+
+            temp = temp->next;
+        }
+    }
+};
+
+int main() {
+    AIMSA ob;
+
+    ob.create_club();
+    ob.add_member();
+    ob.display_club();
+
+    return 0;
+}

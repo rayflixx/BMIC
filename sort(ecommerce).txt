@@ -1,0 +1,91 @@
+#include <iostream>
+using namespace std;
+
+struct Product {
+    char name[30];
+    float price;
+    int popularity;
+};
+
+void display(Product p[], int n) {
+    cout << "\nName\t\tPrice\tPopularity\n";
+    for (int i = 0; i < n; i++) {
+        cout << p[i].name << "\t\t"
+             << p[i].price << "\t"
+             << p[i].popularity << endl;
+    }
+}
+
+// Quick Sort by price in ascending order
+int partition(Product p[], int low, int high) {
+    float pivot = p[high].price;
+    int i = low - 1;
+
+    for (int j = low; j < high; j++) {
+        if (p[j].price <= pivot) {
+            i++;
+            Product temp = p[i];
+            p[i] = p[j];
+            p[j] = temp;
+        }
+    }
+
+    Product temp = p[i + 1];
+    p[i + 1] = p[high];
+    p[high] = temp;
+
+    return i + 1;
+}
+
+void quickSort(Product p[], int low, int high) {
+    if (low < high) {
+        int pi = partition(p, low, high);
+        quickSort(p, low, pi - 1);
+        quickSort(p, pi + 1, high);
+    }
+}
+
+// Insertion Sort by popularity in descending order
+void insertionSort(Product p[], int n) {
+    for (int i = 1; i < n; i++) {
+        Product key = p[i];
+        int j = i - 1;
+
+        while (j >= 0 && p[j].popularity < key.popularity) {
+            p[j + 1] = p[j];
+            j--;
+        }
+
+        p[j + 1] = key;
+    }
+}
+
+int main() {
+    Product p[100], priceList[100], popularityList[100];
+    int n;
+
+    cout << "Enter number of products (maximum 100): ";
+    cin >> n;
+
+    if (n < 1 || n > 100) {
+        cout << "Invalid number of products.\n";
+        return 0;
+    }
+
+    for (int i = 0; i < n; i++) {
+        cout << "\nEnter product name, price and popularity: ";
+        cin >> p[i].name >> p[i].price >> p[i].popularity;
+        priceList[i] = p[i];
+        popularityList[i] = p[i];
+    }
+
+    quickSort(priceList, 0, n - 1);
+    cout << "\nProducts sorted by price (ascending):\n";
+    display(priceList, n);
+
+    insertionSort(popularityList, n);
+    cout << "\nProducts sorted by popularity (descending):\n";
+    display(popularityList, n);
+
+    return 0;
+}

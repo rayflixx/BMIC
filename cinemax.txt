@@ -1,0 +1,154 @@
+
+#include <iostream>
+using namespace std;
+
+typedef struct node {
+    int data;
+    char status;
+    struct node *prev, *next;
+} node;
+
+class Cinemax {
+private:
+    node* hn[10];
+
+public:
+    Cinemax() {
+        for (int i = 0; i < 10; i++) {
+            hn[i] = NULL;
+
+            for (int j = 1; j <= 10; j++) {
+                node* nn = new node();
+                nn->data = j;
+                nn->status = 'A';
+
+                if (hn[i] == NULL) {
+                    nn->next = nn;
+                    nn->prev = nn;
+                    hn[i] = nn;
+                } else {
+                    node* cn = hn[i]->prev;
+
+                    nn->next = hn[i];
+                    nn->prev = cn;
+                    cn->next = nn;
+                    hn[i]->prev = nn;
+                }
+            }
+        }
+    }
+
+    void Book_Ticket(int k, int m) {
+        if (k < 1 || k > 10 || m < 1 || m > 10) {
+            cout << "Invalid row or seat number.\n";
+            return;
+        }
+
+        node* cn = hn[k - 1];
+
+        while (cn->data != m && cn->next != hn[k - 1]) {
+            cn = cn->next;
+        }
+
+        if (cn->data != m) {
+            cout << "Seat not found.\n";
+            return;
+        }
+
+        if (cn->status == 'B') {
+            cout << "The seat is already booked.\n";
+        } else {
+            char dec;
+            cout << "Confirm booking (Y/N): ";
+            cin >> dec;
+
+            if (dec == 'Y' || dec == 'y') {
+                cn->status = 'B';
+                cout << "Booked successfully.\n";
+            } else {
+                cout << "Booking cancelled.\n";
+            }
+        }
+    }
+
+    void Cancel_Booking(int k, int m) {
+        if (k < 1 || k > 10 || m < 1 || m > 10) {
+            cout << "Invalid row or seat number.\n";
+            return;
+        }
+
+        node* cn = hn[k - 1];
+
+        while (cn->data != m && cn->next != hn[k - 1]) {
+            cn = cn->next;
+        }
+
+        if (cn->data != m) {
+            cout << "Seat not found.\n";
+        } else if (cn->status == 'A') {
+            cout << "The seat is not booked.\n";
+        } else {
+            cn->status = 'A';
+            cout << "Booking cancelled successfully.\n";
+        }
+    }
+
+    void Display_ALL() {
+        cout << "\n--- All Ticket Details ---\n";
+
+        for (int i = 0; i < 10; i++) {
+            node* cn = hn[i];
+
+            cout << "Row " << i + 1 << ": ";
+
+            do {
+                cout << cn->data << cn->status << "  ";
+                cn = cn->next;
+            } while (cn != hn[i]);
+
+            cout << "\n";
+        }
+    }
+};
+
+int main() {
+    Cinemax ob;
+    int choice, row, seat;
+
+    do {
+        cout << "\n--- CINEMAX TICKET BOOKING ---\n";
+        cout << "1. Display All Seats\n";
+        cout << "2. Book Ticket\n";
+        cout << "3. Cancel Booking\n";
+        cout << "0. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            ob.Display_ALL();
+            break;
+
+        case 2:
+            cout << "Enter row and seat number: ";
+            cin >> row >> seat;
+            ob.Book_Ticket(row, seat);
+            break;
+
+        case 3:
+            cout << "Enter row and seat number: ";
+            cin >> row >> seat;
+            ob.Cancel_Booking(row, seat);
+            break;
+
+        case 0:
+            cout << "Exiting program.\n";
+            break;
+
+        default:
+            cout << "Invalid choice.\n";
+        }
+    } while (choice != 0);
+
+    return 0;
+}

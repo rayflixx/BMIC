@@ -1,0 +1,128 @@
+#include <iostream>
+using namespace std;
+
+class Sparse {
+public:
+    int row, col, nonZero;
+    int mat[100][3];
+
+    // Input sparse matrix in 3-tuple form
+    void input() {
+        cout << "Enter rows, columns and non-zero elements: ";
+        cin >> row >> col >> nonZero;
+
+        mat[0][0] = row;
+        mat[0][1] = col;
+        mat[0][2] = nonZero;
+
+        cout << "Enter row, column and value of each non-zero element:\n";
+
+        for (int i = 1; i <= nonZero; i++) {
+            cin >> mat[i][0] >> mat[i][1] >> mat[i][2];
+        }
+    }
+
+    // Display sparse matrix
+    void display() {
+        cout << "Row Col Value\n";
+
+        for (int i = 0; i <= nonZero; i++) {
+            for (int j = 0; j < 3; j++) {
+                cout << mat[i][j] << " ";
+            }
+            cout << endl;
+        }
+    }
+
+    // Add two sparse matrices
+    void add(Sparse s) {
+        if (row != s.row || col != s.col) {
+            cout << "Addition not possible: dimensions differ.\n";
+            return;
+        }
+
+        int a[10][10] = {};
+        int b[10][10] = {};
+        int result[10][10] = {};
+
+        // Convert first sparse matrix to normal matrix
+        for (int i = 1; i <= nonZero; i++) {
+            a[mat[i][0]][mat[i][1]] = mat[i][2];
+        }
+
+        // Convert second sparse matrix to normal matrix
+        for (int i = 1; i <= s.nonZero; i++) {
+            b[s.mat[i][0]][s.mat[i][1]] = s.mat[i][2];
+        }
+
+        // Add corresponding elements
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                result[i][j] = a[i][j] + b[i][j];
+            }
+        }
+
+        // Count non-zero elements in the result
+        int count = 0;
+
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (result[i][j] != 0)
+                    count++;
+            }
+        }
+
+        // Display result in 3-tuple form
+        cout << "\nAddition Result (3-Tuple):\n";
+        cout << row << " " << col << " " << count << endl;
+
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (result[i][j] != 0) {
+                    cout << i << " " << j << " "
+                         << result[i][j] << endl;
+                }
+            }
+        }
+    }
+
+    // Display transpose of sparse matrix
+    void transpose() {
+        cout << "\nTranspose (3-Tuple):\n";
+        cout << col << " " << row << " " << nonZero << endl;
+
+        for (int c = 0; c < col; c++) {
+            for (int i = 1; i <= nonZero; i++) {
+                if (mat[i][1] == c) {
+                    cout << mat[i][1] << " "
+                         << mat[i][0] << " "
+                         << mat[i][2] << endl;
+                }
+            }
+        }
+    }
+};
+
+int main() {
+    Sparse s1, s2;
+
+    cout << "Enter first sparse matrix:\n";
+    s1.input();
+
+    cout << "\nFirst sparse matrix:\n";
+    s1.display();
+
+    cout << "\nEnter second sparse matrix:\n";
+    s2.input();
+
+    cout << "\nSecond sparse matrix:\n";
+    s2.display();
+
+    cout << "\nAdding matrices...";
+    s1.add(s2);
+
+    cout << "\nTranspose of first matrix:";
+    s1.transpose();
+
+    return 0;
+}

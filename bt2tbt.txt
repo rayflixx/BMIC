@@ -1,0 +1,102 @@
+
+#include <iostream>
+using namespace std;
+
+class Node {
+public:
+    int data;
+    Node *left, *right;
+    bool lthread, rthread;
+
+    Node(int value) {
+        data = value;
+        left = right = NULL;
+        lthread = rthread = false;
+    }
+};
+
+// Create the binary tree
+Node* createTree() {
+    int value;
+    cout << "Enter data (-1 for no node): ";
+    cin >> value;
+
+    if (value == -1)
+        return NULL;
+
+    Node* root = new Node(value);
+
+    cout << "Left child of " << value << ":\n";
+    root->left = createTree();
+
+    cout << "Right child of " << value << ":\n";
+    root->right = createTree();
+
+    return root;
+}
+
+// Convert binary tree into inorder threaded binary tree
+void convertToThreaded(Node* root, Node*& prev) {
+    if (root == NULL)
+        return;
+
+    convertToThreaded(root->left, prev);
+
+    // If left child is missing, create predecessor thread
+    if (root->left == NULL) {
+        root->left = prev;
+        root->lthread = true;
+    }
+
+    // If previous node has no right child, create successor thread
+    if (prev != NULL && prev->right == NULL) {
+        prev->right = root;
+        prev->rthread = true;
+    }
+
+    prev = root;
+
+    convertToThreaded(root->right, prev);
+}
+
+// Inorder traversal using threads
+void inorder(Node* root) {
+    if (root == NULL)
+        return;
+
+    // Find the leftmost node
+    while (root->lthread == false && root->left != NULL)
+        root = root->left;
+
+    while (root != NULL) {
+        cout << root->data << " ";
+
+        // Follow the inorder successor thread
+        if (root->rthread == true) {
+            root = root->right;
+        } else {
+            // Move to the leftmost node in right subtree
+            root = root->right;
+
+            while (root != NULL &&
+                   root->lthread == false &&
+                   root->left != NULL) {
+                root = root->left;
+            }
+        }
+    }
+}
+
+int main() {
+    cout << "Create Binary Tree:\n";
+    Node* root = createTree();
+
+    Node* prev = NULL;
+    convertToThreaded(root, prev);
+
+    cout << "\nInorder Traversal of Threaded Binary Tree:\n";
+    inorder(root);
+
+    cout << endl;
+    return 0;
+}

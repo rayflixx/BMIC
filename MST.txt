@@ -1,0 +1,67 @@
+#include <iostream>
+using namespace std;
+
+class Graph {
+    int cost[20][20], n;
+
+public:
+    void input() {
+        cout << "Enter number of offices: ";
+        cin >> n;
+
+        cout << "Enter cost matrix (0 if no connection):\n";
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                cin >> cost[i][j];
+                if (i == j)
+                    cost[i][j] = 0;
+            }
+        }
+    }
+
+    void prim() {
+        int visited[20] = {0};
+        int minCost = 0, edges = 0;
+        visited[0] = 1;
+
+        cout << "\nSelected phone lines:\n";
+
+        while (edges < n - 1) {
+            int min = 9999, u = -1, v = -1;
+
+            for (int i = 0; i < n; i++) {
+                if (visited[i]) {
+                    for (int j = 0; j < n; j++) {
+                        if (!visited[j] && cost[i][j] != 0 &&
+                            cost[i][j] < min) {
+                            min = cost[i][j];
+                            u = i;
+                            v = j;
+                        }
+                    }
+                }
+            }
+
+            if (u == -1) {
+                cout << "Not all offices can be connected.\n";
+                return;
+            }
+
+            cout << "Office " << u << " - Office " << v
+                 << " : Cost = " << min << endl;
+
+            visited[v] = 1;
+            minCost += min;
+            edges++;
+        }
+
+        cout << "Minimum total cost = " << minCost << endl;
+    }
+};
+
+int main() {
+    Graph g;
+    g.input();
+    g.prim();
+    return 0;
+}
