@@ -1,0 +1,400 @@
+//array
+
+#include <iostream>
+using namespace std;
+
+#define MAX 100
+
+int queue[MAX];
+int front = -1;
+int rear = -1;
+
+// ENQUEUE Operation
+void enqueue(int val) {
+
+    // Check Overflow
+    if ((rear + 1) % MAX == front) {
+        cout << "Queue Overflow\n";
+        return;
+    }
+
+    // First element
+    if (front == -1) {
+        front = 0;
+        rear = 0;
+    }
+    else {
+        rear = (rear + 1) % MAX;
+    }
+
+    queue[rear] = val;
+
+    cout << "Element inserted successfully\n";
+}
+
+// DEQUEUE Operation
+void dequeue() {
+
+    // Check Underflow
+    if (front == -1) {
+        cout << "Queue Underflow\n";
+        return;
+    }
+
+    cout << "Deleted element: " << queue[front] << endl;
+
+    // Only one element
+    if (front == rear) {
+        front = -1;
+        rear = -1;
+    }
+    else {
+        front = (front + 1) % MAX;
+    }
+}
+
+// PEEK Operation
+void peek() {
+
+    if (front == -1) {
+        cout << "Queue is empty\n";
+        return;
+    }
+
+    cout << "Front element: " << queue[front] << endl;
+}
+
+// REAR Operation
+void rearElement() {
+
+    if (rear == -1) {
+        cout << "Queue is empty\n";
+        return;
+    }
+
+    cout << "Rear element: " << queue[rear] << endl;
+}
+
+// DISPLAY Operation
+void display() {
+
+    if (front == -1) {
+        cout << "Queue is empty\n";
+        return;
+    }
+
+    cout << "Queue elements: ";
+
+    int i = front;
+
+    while (true) {
+        cout << queue[i] << " ";
+
+        if (i == rear)
+            break;
+
+        i = (i + 1) % MAX;
+    }
+
+    cout << endl;
+}
+
+// isEmpty Operation
+void isEmpty() {
+
+    if (front == -1)
+        cout << "Queue is empty\n";
+    else
+        cout << "Queue is not empty\n";
+}
+
+// isFull Operation
+void isFull() {
+
+    if ((rear + 1) % MAX == front)
+        cout << "Queue is full\n";
+    else
+        cout << "Queue is not full\n";
+}
+
+// SIZE Operation
+void size() {
+
+    if (front == -1) {
+        cout << "Queue size: 0\n";
+        return;
+    }
+
+    int s = (rear - front + MAX) % MAX + 1;
+
+    cout << "Queue size: " << s << endl;
+}
+
+// MAIN FUNCTION
+int main() {
+
+    int ch, val;
+
+    do {
+        cout << "\n--- QUEUE USING ARRAY ---\n";
+
+        cout << "1. Enqueue\n";
+        cout << "2. Dequeue\n";
+        cout << "3. Peek / Front\n";
+        cout << "4. Rear Element\n";
+        cout << "5. Display\n";
+        cout << "6. isEmpty\n";
+        cout << "7. isFull\n";
+        cout << "8. Size\n";
+        cout << "0. Exit\n";
+
+        cout << "Enter your choice: ";
+        cin >> ch;
+
+        switch (ch) {
+
+        case 1:
+            cout << "Enter value: ";
+            cin >> val;
+            enqueue(val);
+            break;
+
+        case 2:
+            dequeue();
+            break;
+
+        case 3:
+            peek();
+            break;
+
+        case 4:
+            rearElement();
+            break;
+
+        case 5:
+            display();
+            break;
+
+        case 6:
+            isEmpty();
+            break;
+
+        case 7:
+            isFull();
+            break;
+
+        case 8:
+            size();
+            break;
+
+        case 0:
+            cout << "Exiting...\n";
+            break;
+
+        default:
+            cout << "Invalid choice\n";
+        }
+
+    } while (ch != 0);
+
+    return 0;
+}
+//ll
+
+
+#include <iostream>
+using namespace std;
+
+// Node Structure
+class Node {
+public:
+    int data;
+    Node* next;
+
+    Node(int val) {
+        data = val;
+        next = NULL;
+    }
+};
+
+// Front and Rear Pointers
+Node* front = NULL;
+Node* rear = NULL;
+
+int count = 0;
+
+// ENQUEUE Operation
+void enqueue(int val) {
+
+    Node* newNode = new Node(val);
+
+    // If queue is empty
+    if (front == NULL) {
+        front = newNode;
+        rear = newNode;
+    }
+    else {
+        rear->next = newNode;
+        rear = newNode;
+    }
+
+    count++;
+
+    cout << "Element inserted successfully\n";
+}
+
+// DEQUEUE Operation
+void dequeue() {
+
+    // Check Underflow
+    if (front == NULL) {
+        cout << "Queue Underflow\n";
+        return;
+    }
+
+    Node* temp = front;
+
+    cout << "Deleted element: " << front->data << endl;
+
+    front = front->next;
+
+    // If queue becomes empty
+    if (front == NULL)
+        rear = NULL;
+
+    delete temp;
+
+    count--;
+}
+
+// PEEK Operation
+void peek() {
+
+    if (front == NULL) {
+        cout << "Queue is empty\n";
+        return;
+    }
+
+    cout << "Front element: " << front->data << endl;
+}
+
+// REAR Operation
+void rearElement() {
+
+    if (rear == NULL) {
+        cout << "Queue is empty\n";
+        return;
+    }
+
+    cout << "Rear element: " << rear->data << endl;
+}
+
+// DISPLAY Operation
+void display() {
+
+    if (front == NULL) {
+        cout << "Queue is empty\n";
+        return;
+    }
+
+    Node* temp = front;
+
+    cout << "Queue elements: ";
+
+    while (temp != NULL) {
+        cout << temp->data << " ";
+        temp = temp->next;
+    }
+
+    cout << endl;
+}
+
+// isEmpty Operation
+void isEmpty() {
+
+    if (front == NULL)
+        cout << "Queue is empty\n";
+    else
+        cout << "Queue is not empty\n";
+}
+
+// SIZE Operation
+void size() {
+
+    cout << "Queue size: " << count << endl;
+}
+
+// MAIN FUNCTION
+int main() {
+
+    int ch, val;
+
+    do {
+        cout << "\n--- QUEUE USING LINKED LIST ---\n";
+
+        cout << "1. Enqueue\n";
+        cout << "2. Dequeue\n";
+        cout << "3. Peek / Front\n";
+        cout << "4. Rear Element\n";
+        cout << "5. Display\n";
+        cout << "6. isEmpty\n";
+        cout << "7. Size\n";
+        cout << "0. Exit\n";
+
+        cout << "Enter your choice: ";
+        cin >> ch;
+
+        switch (ch) {
+
+        case 1:
+            cout << "Enter value: ";
+            cin >> val;
+            enqueue(val);
+            break;
+
+        case 2:
+            dequeue();
+            break;
+
+        case 3:
+            peek();
+            break;
+
+        case 4:
+            rearElement();
+            break;
+
+        case 5:
+            display();
+            break;
+
+        case 6:
+            isEmpty();
+            break;
+
+        case 7:
+            size();
+            break;
+
+        case 0:
+            cout << "Exiting...\n";
+            break;
+
+        default:
+            cout << "Invalid choice\n";
+        }
+
+    } while (ch != 0);
+
+    // Free remaining memory
+    while (front != NULL) {
+        Node* temp = front;
+        front = front->next;
+        delete temp;
+    }
+
+    rear = NULL;
+
+    return 0;
+}
+

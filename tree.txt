@@ -1,0 +1,556 @@
+
+#include <iostream>
+using namespace std;
+
+// =====================================================
+// 1. BINARY TREE
+// =====================================================
+
+class BNode {
+public:
+    int data;
+    BNode *left, *right;
+
+    BNode(int x) {
+        data = x;
+        left = right = NULL;
+    }
+};
+
+// Inorder: Left Root Right
+void inorder(BNode *root) {
+    if (root == NULL) return;
+
+    inorder(root->left);
+    cout << root->data << " ";
+    inorder(root->right);
+}
+
+// Preorder: Root Left Right
+void preorder(BNode *root) {
+    if (root == NULL) return;
+
+    cout << root->data << " ";
+    preorder(root->left);
+    preorder(root->right);
+}
+
+// Postorder: Left Right Root
+void postorder(BNode *root) {
+    if (root == NULL) return;
+
+    postorder(root->left);
+    postorder(root->right);
+    cout << root->data << " ";
+}
+
+// Level Order Traversal using array queue
+void levelOrder(BNode *root) {
+    if (root == NULL) return;
+
+    BNode *q[100];
+    int front = 0, rear = 0;
+
+    q[rear++] = root;
+
+    while (front < rear) {
+        BNode *temp = q[front++];
+        cout << temp->data << " ";
+
+        if (temp->left != NULL)
+            q[rear++] = temp->left;
+
+        if (temp->right != NULL)
+            q[rear++] = temp->right;
+    }
+}
+
+// Height of Binary Tree
+int treeHeight(BNode *root) {
+    if (root == NULL) return -1;
+
+    int lh = treeHeight(root->left);
+    int rh = treeHeight(root->right);
+
+    return (lh > rh ? lh : rh) + 1;
+}
+
+// Count total nodes
+int countNodes(BNode *root) {
+    if (root == NULL) return 0;
+
+    return 1 + countNodes(root->left)
+             + countNodes(root->right);
+}
+
+// Count leaf nodes
+int countLeaves(BNode *root) {
+    if (root == NULL) return 0;
+
+    if (root->left == NULL && root->right == NULL)
+        return 1;
+
+    return countLeaves(root->left)
+         + countLeaves(root->right);
+}
+
+
+// =====================================================
+// 2. BINARY SEARCH TREE (BST)
+// =====================================================
+
+class BSTNode {
+public:
+    int data;
+    BSTNode *left, *right;
+
+    BSTNode(int x) {
+        data = x;
+        left = right = NULL;
+    }
+};
+
+// Insert node
+BSTNode* bstInsert(BSTNode *root, int x) {
+    if (root == NULL)
+        return new BSTNode(x);
+
+    if (x < root->data)
+        root->left = bstInsert(root->left, x);
+
+    else if (x > root->data)
+        root->right = bstInsert(root->right, x);
+
+    return root;
+}
+
+// Search node
+bool bstSearch(BSTNode *root, int x) {
+    if (root == NULL)
+        return false;
+
+    if (root->data == x)
+        return true;
+
+    if (x < root->data)
+        return bstSearch(root->left, x);
+
+    return bstSearch(root->right, x);
+}
+
+// Find minimum node
+BSTNode* findMin(BSTNode *root) {
+    while (root != NULL && root->left != NULL)
+        root = root->left;
+
+    return root;
+}
+
+// Delete node
+BSTNode* bstDelete(BSTNode *root, int x) {
+    if (root == NULL)
+        return NULL;
+
+    if (x < root->data)
+        root->left = bstDelete(root->left, x);
+
+    else if (x > root->data)
+        root->right = bstDelete(root->right, x);
+
+    else {
+        // Case 1: No child
+        if (root->left == NULL && root->right == NULL) {
+            delete root;
+            return NULL;
+        }
+
+        // Case 2: Only right child
+        else if (root->left == NULL) {
+            BSTNode *temp = root->right;
+            delete root;
+            return temp;
+        }
+
+        // Case 3: Only left child
+        else if (root->right == NULL) {
+            BSTNode *temp = root->left;
+            delete root;
+            return temp;
+        }
+
+        // Case 4: Two children
+        BSTNode *temp = findMin(root->right);
+
+        root->data = temp->data;
+
+        root->right = bstDelete(root->right, temp->data);
+    }
+
+    return root;
+}
+
+// BST Inorder
+void bstInorder(BSTNode *root) {
+    if (root == NULL) return;
+
+    bstInorder(root->left);
+    cout << root->data << " ";
+    bstInorder(root->right);
+}
+
+// BST Preorder
+void bstPreorder(BSTNode *root) {
+    if (root == NULL) return;
+
+    cout << root->data << " ";
+    bstPreorder(root->left);
+    bstPreorder(root->right);
+}
+
+// BST Postorder
+void bstPostorder(BSTNode *root) {
+    if (root == NULL) return;
+
+    bstPostorder(root->left);
+    bstPostorder(root->right);
+    cout << root->data << " ";
+}
+
+
+// =====================================================
+// 3. AVL TREE
+// =====================================================
+
+class AVLNode {
+public:
+    int data;
+    int height;
+    AVLNode *left, *right;
+
+    AVLNode(int x) {
+        data = x;
+        height = 1;
+        left = right = NULL;
+    }
+};
+
+// Get height
+int avlHeight(AVLNode *root) {
+    if (root == NULL) return 0;
+    return root->height;
+}
+
+// Get maximum
+int maximum(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+// Balance factor
+int balanceFactor(AVLNode *root) {
+    if (root == NULL) return 0;
+
+    return avlHeight(root->left) -
+           avlHeight(root->right);
+}
+
+// Right rotation (LL case)
+AVLNode* rightRotate(AVLNode *y) {
+    AVLNode *x = y->left;
+    AVLNode *T2 = x->right;
+
+    x->right = y;
+    y->left = T2;
+
+    y->height = 1 + maximum(
+        avlHeight(y->left),
+        avlHeight(y->right)
+    );
+
+    x->height = 1 + maximum(
+        avlHeight(x->left),
+        avlHeight(x->right)
+    );
+
+    return x;
+}
+
+// Left rotation (RR case)
+AVLNode* leftRotate(AVLNode *x) {
+    AVLNode *y = x->right;
+    AVLNode *T2 = y->left;
+
+    y->left = x;
+    x->right = T2;
+
+    x->height = 1 + maximum(
+        avlHeight(x->left),
+        avlHeight(x->right)
+    );
+
+    y->height = 1 + maximum(
+        avlHeight(y->left),
+        avlHeight(y->right)
+    );
+
+    return y;
+}
+
+// AVL insertion
+AVLNode* avlInsert(AVLNode *root, int x) {
+    if (root == NULL)
+        return new AVLNode(x);
+
+    if (x < root->data)
+        root->left = avlInsert(root->left, x);
+
+    else if (x > root->data)
+        root->right = avlInsert(root->right, x);
+
+    else
+        return root;
+
+    // Update height
+    root->height = 1 + maximum(
+        avlHeight(root->left),
+        avlHeight(root->right)
+    );
+
+    int balance = balanceFactor(root);
+
+    // LL Case
+    if (balance > 1 && x < root->left->data)
+        return rightRotate(root);
+
+    // RR Case
+    if (balance < -1 && x > root->right->data)
+        return leftRotate(root);
+
+    // LR Case
+    if (balance > 1 && x > root->left->data) {
+        root->left = leftRotate(root->left);
+        return rightRotate(root);
+    }
+
+    // RL Case
+    if (balance < -1 && x < root->right->data) {
+        root->right = rightRotate(root->right);
+        return leftRotate(root);
+    }
+
+    return root;
+}
+
+// AVL Inorder
+void avlInorder(AVLNode *root) {
+    if (root == NULL) return;
+
+    avlInorder(root->left);
+    cout << root->data << " ";
+    avlInorder(root->right);
+}
+
+
+// =====================================================
+// 4. THREADED BINARY TREE
+// Inorder Threaded Binary Tree
+// =====================================================
+
+class TNode {
+public:
+    int data;
+    TNode *left, *right;
+
+    // true = thread, false = child link
+    bool lthread, rthread;
+
+    TNode(int x) {
+        data = x;
+        left = right = NULL;
+        lthread = rthread = true;
+    }
+};
+
+// Insert into threaded binary search tree
+TNode* tbtInsert(TNode *root, int x) {
+    TNode *ptr = root;
+    TNode *parent = NULL;
+
+    // Find insertion position
+    while (ptr != NULL) {
+        if (x == ptr->data) {
+            cout << "Duplicate value not allowed\n";
+            return root;
+        }
+
+        parent = ptr;
+
+        if (x < ptr->data) {
+            if (ptr->lthread == false)
+                ptr = ptr->left;
+            else
+                break;
+        }
+        else {
+            if (ptr->rthread == false)
+                ptr = ptr->right;
+            else
+                break;
+        }
+    }
+
+    TNode *temp = new TNode(x);
+
+    // First node
+    if (parent == NULL) {
+        root = temp;
+    }
+
+    // Insert as left child
+    else if (x < parent->data) {
+        temp->left = parent->left;
+        temp->right = parent;
+
+        parent->lthread = false;
+        parent->left = temp;
+    }
+
+    // Insert as right child
+    else {
+        temp->right = parent->right;
+        temp->left = parent;
+
+        parent->rthread = false;
+        parent->right = temp;
+    }
+
+    return root;
+}
+
+// Find leftmost node
+TNode* leftMost(TNode *root) {
+    if (root == NULL) return NULL;
+
+    while (root->lthread == false)
+        root = root->left;
+
+    return root;
+}
+
+// Inorder traversal without recursion or stack
+void tbtInorder(TNode *root) {
+    TNode *cur = leftMost(root);
+
+    while (cur != NULL) {
+        cout << cur->data << " ";
+
+        if (cur->rthread == true)
+            cur = cur->right;
+        else
+            cur = leftMost(cur->right);
+    }
+}
+
+
+// =====================================================
+// MAIN FUNCTION - DEMONSTRATION OF ALL TREES
+// =====================================================
+
+int main() {
+
+    // ---------------- BINARY TREE ----------------
+
+    cout << "\n========== BINARY TREE ==========\n";
+
+    BNode *bt = new BNode(1);
+    bt->left = new BNode(2);
+    bt->right = new BNode(3);
+    bt->left->left = new BNode(4);
+    bt->left->right = new BNode(5);
+
+    cout << "Inorder: ";
+    inorder(bt);
+
+    cout << "\nPreorder: ";
+    preorder(bt);
+
+    cout << "\nPostorder: ";
+    postorder(bt);
+
+    cout << "\nLevel Order: ";
+    levelOrder(bt);
+
+    cout << "\nHeight: " << treeHeight(bt);
+    cout << "\nTotal Nodes: " << countNodes(bt);
+    cout << "\nLeaf Nodes: " << countLeaves(bt);
+
+
+    // ---------------- BST ----------------
+
+    cout << "\n\n========== BINARY SEARCH TREE ==========\n";
+
+    BSTNode *bst = NULL;
+
+    bst = bstInsert(bst, 50);
+    bst = bstInsert(bst, 30);
+    bst = bstInsert(bst, 70);
+    bst = bstInsert(bst, 20);
+    bst = bstInsert(bst, 40);
+    bst = bstInsert(bst, 60);
+    bst = bstInsert(bst, 80);
+
+    cout << "Inorder: ";
+    bstInorder(bst);
+
+    cout << "\nPreorder: ";
+    bstPreorder(bst);
+
+    cout << "\nPostorder: ";
+    bstPostorder(bst);
+
+    cout << "\nSearch 40: ";
+    cout << (bstSearch(bst, 40) ? "Found" : "Not Found");
+
+    bst = bstDelete(bst, 70);
+
+    cout << "\nAfter deleting 70: ";
+    bstInorder(bst);
+
+
+    // ---------------- AVL TREE ----------------
+
+    cout << "\n\n========== AVL TREE ==========\n";
+
+    AVLNode *avl = NULL;
+
+    avl = avlInsert(avl, 30);
+    avl = avlInsert(avl, 20);
+    avl = avlInsert(avl, 10);
+    avl = avlInsert(avl, 25);
+    avl = avlInsert(avl, 40);
+    avl = avlInsert(avl, 50);
+
+    cout << "Inorder: ";
+    avlInorder(avl);
+
+
+    // ---------------- THREADED BINARY TREE ----------------
+
+    cout << "\n\n========== THREADED BINARY TREE ==========\n";
+
+    TNode *tbt = NULL;
+
+    tbt = tbtInsert(tbt, 50);
+    tbt = tbtInsert(tbt, 30);
+    tbt = tbtInsert(tbt, 70);
+    tbt = tbtInsert(tbt, 20);
+    tbt = tbtInsert(tbt, 40);
+    tbt = tbtInsert(tbt, 60);
+    tbt = tbtInsert(tbt, 80);
+
+    cout << "Inorder without recursion or stack: ";
+    tbtInorder(tbt);
+
+    cout << "\n";
+
+    return 0;
+}

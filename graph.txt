@@ -1,0 +1,371 @@
+
+#include <iostream>
+using namespace std;
+
+#define MAX 20
+#define INF 999999
+
+// =====================================================
+// 1. GRAPH REPRESENTATION - ADJACENCY MATRIX
+// =====================================================
+
+void createMatrix(int graph[MAX][MAX], int n, int directed) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            graph[i][j] = 0;
+        }
+    }
+
+    int edges, u, v, w;
+
+    cout << "Enter number of edges: ";
+    cin >> edges;
+
+    for (int i = 0; i < edges; i++) {
+        cout << "Enter source, destination and weight: ";
+        cin >> u >> v >> w;
+
+        graph[u][v] = w;
+
+        if (directed == 0)
+            graph[v][u] = w;
+    }
+}
+
+void displayMatrix(int graph[MAX][MAX], int n) {
+    cout << "\nAdjacency Matrix:\n";
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cout << graph[i][j] << "\t";
+        }
+        cout << endl;
+    }
+}
+
+
+// =====================================================
+// 2. GRAPH REPRESENTATION - ADJACENCY LIST
+// =====================================================
+
+struct AdjNode {
+    int vertex;
+    int weight;
+    AdjNode *next;
+};
+
+AdjNode *adj[MAX];
+
+void initializeList(int n) {
+    for (int i = 0; i < n; i++)
+        adj[i] = NULL;
+}
+
+void addEdgeList(int u, int v, int w, int directed) {
+    AdjNode *temp = new AdjNode;
+
+    temp->vertex = v;
+    temp->weight = w;
+    temp->next = adj[u];
+    adj[u] = temp;
+
+    if (directed == 0) {
+        AdjNode *temp2 = new AdjNode;
+
+        temp2->vertex = u;
+        temp2->weight = w;
+        temp2->next = adj[v];
+        adj[v] = temp2;
+    }
+}
+
+void displayList(int n) {
+    cout << "\nAdjacency List:\n";
+
+    for (int i = 0; i < n; i++) {
+        cout << i << " -> ";
+
+        AdjNode *temp = adj[i];
+
+        while (temp != NULL) {
+            cout << "(" << temp->vertex
+                 << ", weight=" << temp->weight << ") -> ";
+
+            temp = temp->next;
+        }
+
+        cout << "NULL\n";
+    }
+}
+
+
+// =====================================================
+// 3. BFS - BREADTH FIRST SEARCH
+// =====================================================
+
+void BFS(int graph[MAX][MAX], int n, int start) {
+    int visited[MAX] = {0};
+    int q[MAX];
+
+    int front = 0, rear = 0;
+
+    visited[start] = 1;
+    q[rear++] = start;
+
+    cout << "BFS Traversal: ";
+
+    while (front < rear) {
+        int current = q[front++];
+
+        cout << current << " ";
+
+        for (int i = 0; i < n; i++) {
+            if (graph[current][i] != 0 && !visited[i]) {
+                visited[i] = 1;
+                q[rear++] = i;
+            }
+        }
+    }
+
+    cout << endl;
+}
+
+
+// =====================================================
+// 4. DFS - DEPTH FIRST SEARCH
+// =====================================================
+
+void DFSUtil(int graph[MAX][MAX], int n,
+             int vertex, int visited[]) {
+
+    visited[vertex] = 1;
+
+    cout << vertex << " ";
+
+    for (int i = 0; i < n; i++) {
+        if (graph[vertex][i] != 0 && !visited[i]) {
+            DFSUtil(graph, n, i, visited);
+        }
+    }
+}
+
+void DFS(int graph[MAX][MAX], int n, int start) {
+    int visited[MAX] = {0};
+
+    cout << "DFS Traversal: ";
+
+    DFSUtil(graph, n, start, visited);
+
+    cout << endl;
+}
+
+
+// =====================================================
+// 5. PRIM'S ALGORITHM - MINIMUM SPANNING TREE
+// =====================================================
+
+void prims(int graph[MAX][MAX], int n) {
+    int visited[MAX] = {0};
+
+    visited[0] = 1;
+
+    int edges = 0;
+    int totalCost = 0;
+
+    cout << "\nPrim's MST:\n";
+
+    while (edges < n - 1) {
+        int min = INF;
+        int u = -1, v = -1;
+
+        for (int i = 0; i < n; i++) {
+            if (visited[i]) {
+                for (int j = 0; j < n; j++) {
+                    if (!visited[j] &&
+                        graph[i][j] != 0 &&
+                        graph[i][j] < min) {
+
+                        min = graph[i][j];
+                        u = i;
+                        v = j;
+                    }
+                }
+            }
+        }
+
+        if (u == -1) {
+            cout << "Graph is disconnected!\n";
+            return;
+        }
+
+        cout << u << " - " << v
+             << " : " << min << endl;
+
+        visited[v] = 1;
+        totalCost += min;
+        edges++;
+    }
+
+    cout << "Total MST Cost: " << totalCost << endl;
+}
+
+
+// =====================================================
+// 6. KRUSKAL'S ALGORITHM - MINIMUM SPANNING TREE
+// =====================================================
+
+struct Edge {
+    int u, v, weight;
+};
+
+int parent[MAX];
+
+int findParent(int x) {
+    if (parent[x] == x)
+        return x;
+
+    parent[x] = findParent(parent[x]);
+    return parent[x];
+}
+
+void unionSet(int a, int b) {
+    int x = findParent(a);
+    int y = findParent(b);
+
+    parent[x] = y;
+}
+
+void sortEdges(Edge edges[], int e) {
+    for (int i = 0; i < e - 1; i++) {
+        for (int j = 0; j < e - i - 1; j++) {
+            if (edges[j].weight > edges[j + 1].weight) {
+                Edge temp = edges[j];
+                edges[j] = edges[j + 1];
+                edges[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void kruskal(int n, Edge edges[], int e) {
+    for (int i = 0; i < n; i++)
+        parent[i] = i;
+
+    sortEdges(edges, e);
+
+    int totalCost = 0;
+    int count = 0;
+
+    cout << "\nKruskal's MST:\n";
+
+    for (int i = 0; i < e && count < n - 1; i++) {
+        int u = edges[i].u;
+        int v = edges[i].v;
+
+        if (findParent(u) != findParent(v)) {
+            cout << u << " - " << v
+                 << " : " << edges[i].weight << endl;
+
+            unionSet(u, v);
+
+            totalCost += edges[i].weight;
+            count++;
+        }
+    }
+
+    if (count != n - 1) {
+        cout << "Graph is disconnected!\n";
+        return;
+    }
+
+    cout << "Total MST Cost: " << totalCost << endl;
+}
+
+
+// =====================================================
+// MAIN FUNCTION - DEMONSTRATION OF ALL GRAPH ALGORITHMS
+// =====================================================
+
+int main() {
+    int n, directed;
+
+    cout << "Enter number of vertices (maximum 20): ";
+    cin >> n;
+
+    cout << "Enter 0 for Undirected, 1 for Directed: ";
+    cin >> directed;
+
+    if (n < 1 || n > MAX) {
+        cout << "Invalid number of vertices\n";
+        return 0;
+    }
+
+    // Adjacency Matrix
+    int graph[MAX][MAX];
+
+    cout << "\nEnter graph edges for Adjacency Matrix:\n";
+    createMatrix(graph, n, directed);
+
+    displayMatrix(graph, n);
+
+    // Adjacency List
+    initializeList(n);
+
+    cout << "\nEnter edges for Adjacency List:\n";
+
+    int e, u, v, w;
+
+    cout << "Enter number of edges: ";
+    cin >> e;
+
+    for (int i = 0; i < e; i++) {
+        cout << "Enter source, destination and weight: ";
+        cin >> u >> v >> w;
+
+        addEdgeList(u, v, w, directed);
+    }
+
+    displayList(n);
+
+    // BFS and DFS
+    int start;
+
+    cout << "\nEnter starting vertex for BFS and DFS: ";
+    cin >> start;
+
+    if (start >= 0 && start < n) {
+        BFS(graph, n, start);
+        DFS(graph, n, start);
+    }
+    else {
+        cout << "Invalid starting vertex\n";
+    }
+
+    // MST algorithms require undirected weighted graph
+    if (directed == 0) {
+        prims(graph, n);
+
+        Edge edges[MAX * MAX];
+        int edgeCount = 0;
+
+        // Collect each undirected edge once
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (graph[i][j] != 0) {
+                    edges[edgeCount].u = i;
+                    edges[edgeCount].v = j;
+                    edges[edgeCount].weight = graph[i][j];
+                    edgeCount++;
+                }
+            }
+        }
+
+        kruskal(n, edges, edgeCount);
+    }
+    else {
+        cout << "\nPrim's and Kruskal's algorithms "
+             << "require an undirected graph.\n";
+    }
+
+    return 0;
+}

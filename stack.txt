@@ -1,0 +1,294 @@
+// array
+#include <iostream>
+using namespace std;
+
+#define MAX 100
+
+int stack[MAX];
+int top = -1;
+
+// PUSH Operation
+void push(int val) {
+    if (top == MAX - 1) {
+        cout << "Stack Overflow\n";
+        return;
+    }
+
+    top++;
+    stack[top] = val;
+
+    cout << "Element inserted successfully\n";
+}
+
+// POP Operation
+void pop() {
+    if (top == -1) {
+        cout << "Stack Underflow\n";
+        return;
+    }
+
+    cout << "Deleted element: " << stack[top] << endl;
+    top--;
+}
+
+// PEEK Operation
+void peek() {
+    if (top == -1) {
+        cout << "Stack is empty\n";
+        return;
+    }
+
+    cout << "Top element: " << stack[top] << endl;
+}
+
+// DISPLAY Operation
+void display() {
+    if (top == -1) {
+        cout << "Stack is empty\n";
+        return;
+    }
+
+    cout << "Stack elements:\n";
+
+    for (int i = top; i >= 0; i--) {
+        cout << stack[i] << endl;
+    }
+}
+
+// isEmpty Operation
+void isEmpty() {
+    if (top == -1)
+        cout << "Stack is empty\n";
+    else
+        cout << "Stack is not empty\n";
+}
+
+// isFull Operation
+void isFull() {
+    if (top == MAX - 1)
+        cout << "Stack is full\n";
+    else
+        cout << "Stack is not full\n";
+}
+
+// SIZE Operation
+void size() {
+    cout << "Stack size: " << top + 1 << endl;
+}
+
+// MAIN FUNCTION
+int main() {
+    int ch, val;
+
+    do {
+        cout << "\n--- STACK USING ARRAY ---\n";
+        cout << "1. Push\n";
+        cout << "2. Pop\n";
+        cout << "3. Peek\n";
+        cout << "4. Display\n";
+        cout << "5. isEmpty\n";
+        cout << "6. isFull\n";
+        cout << "7. Size\n";
+        cout << "0. Exit\n";
+
+        cout << "Enter your choice: ";
+        cin >> ch;
+
+        switch (ch) {
+        case 1:
+            cout << "Enter value: ";
+            cin >> val;
+            push(val);
+            break;
+
+        case 2:
+            pop();
+            break;
+
+        case 3:
+            peek();
+            break;
+
+        case 4:
+            display();
+            break;
+
+        case 5:
+            isEmpty();
+            break;
+
+        case 6:
+            isFull();
+            break;
+
+        case 7:
+            size();
+            break;
+
+        case 0:
+            cout << "Exiting...\n";
+            break;
+
+        default:
+            cout << "Invalid choice\n";
+        }
+
+    } while (ch != 0);
+
+    return 0;
+}
+
+//ll
+
+#include <iostream>
+using namespace std;
+
+// Node Structure
+class Node {
+public:
+    int data;
+    Node* next;
+
+    Node(int val) {
+        data = val;
+        next = NULL;
+    }
+};
+
+Node* top = NULL;
+int count = 0;
+
+// PUSH Operation
+void push(int val) {
+    Node* newNode = new Node(val);
+
+    newNode->next = top;
+    top = newNode;
+
+    count++;
+
+    cout << "Element inserted successfully\n";
+}
+
+// POP Operation
+void pop() {
+    if (top == NULL) {
+        cout << "Stack Underflow\n";
+        return;
+    }
+
+    Node* temp = top;
+
+    cout << "Deleted element: " << top->data << endl;
+
+    top = top->next;
+
+    delete temp;
+
+    count--;
+}
+
+// PEEK Operation
+void peek() {
+    if (top == NULL) {
+        cout << "Stack is empty\n";
+        return;
+    }
+
+    cout << "Top element: " << top->data << endl;
+}
+
+// DISPLAY Operation
+void display() {
+    if (top == NULL) {
+        cout << "Stack is empty\n";
+        return;
+    }
+
+    Node* temp = top;
+
+    cout << "Stack elements:\n";
+
+    while (temp != NULL) {
+        cout << temp->data << endl;
+        temp = temp->next;
+    }
+}
+
+// isEmpty Operation
+void isEmpty() {
+    if (top == NULL)
+        cout << "Stack is empty\n";
+    else
+        cout << "Stack is not empty\n";
+}
+
+// SIZE Operation
+void size() {
+    cout << "Stack size: " << count << endl;
+}
+
+// MAIN FUNCTION
+int main() {
+    int ch, val;
+
+    do {
+        cout << "\n--- STACK USING LINKED LIST ---\n";
+        cout << "1. Push\n";
+        cout << "2. Pop\n";
+        cout << "3. Peek\n";
+        cout << "4. Display\n";
+        cout << "5. isEmpty\n";
+        cout << "6. Size\n";
+        cout << "0. Exit\n";
+
+        cout << "Enter your choice: ";
+        cin >> ch;
+
+        switch (ch) {
+        case 1:
+            cout << "Enter value: ";
+            cin >> val;
+            push(val);
+            break;
+
+        case 2:
+            pop();
+            break;
+
+        case 3:
+            peek();
+            break;
+
+        case 4:
+            display();
+            break;
+
+        case 5:
+            isEmpty();
+            break;
+
+        case 6:
+            size();
+            break;
+
+        case 0:
+            cout << "Exiting...\n";
+            break;
+
+        default:
+            cout << "Invalid choice\n";
+        }
+
+    } while (ch != 0);
+
+    // Free remaining memory
+    while (top != NULL) {
+        Node* temp = top;
+        top = top->next;
+        delete temp;
+    }
+
+    return 0;
+}
+
